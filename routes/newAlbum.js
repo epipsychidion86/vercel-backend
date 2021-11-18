@@ -1,17 +1,15 @@
-import { getAlbumPost, getAlbumDelete } from "../controllers/newAlbumController.js";
+import { postAlbum, deleteAlbum, deleteAllAlbums, /*updateAlbum*/ } from "../controllers/newAlbumController.js";
 
 import express from "express";
-import { db } from "../index.js";
 
 const router = express.Router();
 
-router.post("/", getAlbumPost);
+router.post("/", postAlbum);
 
-router.delete("/", getAlbumDelete);
+// router.put("/", updateAllAlbums);
 
-// This doesn't exist in our project, but is a good example of using a router, to handle more than one *related* endpoint
-router.get("/", (req, res, next) => {
-    // Some functionality...
-})
+router.delete("/", deleteAllAlbums); // DELETE /new-album/all - deletes all albums
+
+router.delete("/:albumId", deleteAlbum);        // DELETE /new-album - deletes one album
 
 export default router;

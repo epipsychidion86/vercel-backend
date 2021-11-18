@@ -18,25 +18,44 @@ import morgan from "morgan";
 import logger from "./middleware/logger.js";
 
 // Import our new route to handle requests to the "/new-album" endpoint
-import newAlbum from "./routes/newAlbum.js";
+// import newAlbum from "./routes/newAlbum.js";
+
+import albums from "./routes/albums.js";
 
 // Import our new route to handle requests to the "/login" endpoint
 import login from "./routes/login.js";
 
+// Import our new route to handle requests to the "/user" endpoint
+import user from "./routes/user.js";
+import bands from "./routes/bands.js";
+
+// Import mongoose
+import mongoose from "mongoose";
+
+// Connecting to a MongoDB database using a connection string
+// Remember: if this db doesn't exist yet, it is created implicitly for you!
+mongoose.connect("mongodb://localhost:27017/albums-project");
+
+// Callbacks for mongoose - one for when the db connection is opened, another for when there's an error
+mongoose.connection.on("open", () => console.log("Database connection established"));
+mongoose.connection.on("error", () => console.error);
+
+// ! ===== We are no longer using LowDB
 // Import lowdb
-import { Low, JSONFile } from "lowdb";
+// import { Low, JSONFile } from "lowdb";
 
 // lowdb uses adapters for reading and writing JSON files
 // "An adapter is a simple class that just needs to expose two methods: read and write"
-const adapter = new JSONFile("./data/db.json");
-export const db = new Low(adapter);
+// const adapter = new JSONFile("./data/db.json");
+// export const db = new Low(adapter);
 
 // Wait for lowdb to read the contents of the db.json file before continuing
-await db.read();
+// await db.read();
 
 // If there's already some data in db.json, that's cool!
 // If db.json has nothing in it, create starting data ---> { users: [], albums: [] }
-db.data ||= { users: [] };
+//db.data ||= { users: [] };
+// ! ================================
 
 // ! Deprecated
 //const bodyParser = require("body-parser");
@@ -65,13 +84,21 @@ app.use(express.json());
 app.get("/", rootGet);
 
 // Register our new route for the "/new-album" endpoint.
-app.use("/new-album", newAlbum);
+// app.use("/new-album", newAlbum);
+
+app.use("/albums", albums);
 
 // Register our new route for the "/login" endpoint.
 app.use("/login", login);
 
+// Register our new route for the "/user" endpoint
+app.use("/user", user);
+
+app.use("/bands", bands);
+
+// ! No longer using LowDB
 // Log the current db.data object
-console.log("The current db.data object:", db.data)
+// console.log("The current db.data object:", db.data)
 
 // * 19/10 The last middleware registered should always be the global Error handler
 // The reason is that then, when a route has an error, it can call next()
