@@ -52,6 +52,8 @@ export const loginPost = async (req, res, next) => {
                 res.status(201).json(returnedUser);
             }
         } else {
+            await currentUser.populate("albums");
+
             // Else, if a user with the same username/password is found...
             const returnedUser = {
                 _id: currentUser._id,

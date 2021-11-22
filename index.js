@@ -83,9 +83,7 @@ app.use(express.json());
 // New "/" endpoint
 app.get("/", rootGet);
 
-// Register our new route for the "/new-album" endpoint.
-// app.use("/new-album", newAlbum);
-
+// Register our new route for the "/albums" endpoint.
 app.use("/albums", albums);
 
 // Register our new route for the "/login" endpoint.
@@ -94,19 +92,20 @@ app.use("/login", login);
 // Register our new route for the "/user" endpoint
 app.use("/user", user);
 
+// Register our new route for the "/bands" endpoint
 app.use("/bands", bands);
 
 // ! No longer using LowDB
 // Log the current db.data object
 // console.log("The current db.data object:", db.data)
 
-// * 19/10 The last middleware registered should always be the global Error handler
+// * The last middleware registered should always be the global Error handler
 // The reason is that then, when a route has an error, it can call next()
 // And pass the error to this middleware to be handled
 // Note that error handling middleware has a fourth parameter
 app.use(globalErrorHandler);
 
 // printenv | grep PORT -> grep is a feature for searching through large pieces of text.
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 3001, () => {
     console.log("Server has started on port", process.env.PORT);
 })

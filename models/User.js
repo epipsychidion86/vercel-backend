@@ -46,6 +46,10 @@ const userSchema = new Schema({
     ObjectId("efghij987654...")
   ]
   */
+
+  // 1. hit the button - create a new album
+  // 2. create a new Album (a document) in the "albums" collection (of the "albums-project" db)
+  // 3. also add the new album's _id to the user's "albums" array
   albums: [{ type: mongoose.Types.ObjectId, required: true, ref: "Album" }],
 });
 

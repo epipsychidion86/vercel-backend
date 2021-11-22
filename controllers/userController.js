@@ -48,50 +48,70 @@ export const getUser = async (req, res, next) => {
 };
 
 
-// PATCH /users/:userId
+// PATCH /user/:userId
 //     body: {
 //       albumId: "",
 //     }
 export const updateUser = async (req, res, next) => {
     try {
+        // Find the current user in the "users" collection, using the User model
+        // Note: this time, we are getting the userId from the PARAMS of the request
+        // For the url: "http://localhost:3001/user?abcd1234" => userId = "abcd1234"
         const currentUser = await User.findById(req.params.userId);
 
+        // If the current user doesn't exist return a 404 error ("Not Found") via the error handling middleware
         if (!currentUser) return next(createError.NotFound());
 
+        // Create a variable by using the albumId from the the BODY of the current request
         const albumId = req.body.albumId;
-        if (!albumId) return res.status(204).send();
+        
+        // If there is no albumId in the request body...
+        // Return back a 400 ("Bad Request") error
+        if (!albumId) return next(createError.BadRequest());
 
-        if (currentUser.albums.includes(albumId)) {
-            currentUser.albums = currentUser.albums.filter(album => album != albumId);
-        } else {
-            currentUser.albums = [...currentUser.albums, albumId];
-        }
+        // If the currentUser already has the new album's _id in their "albums" array, return a 409 error ("Conflict")
+        if (currentUser.albums.includes(albumId)) return next(createError.Conflict());    
 
+        // Add the new album's _id to the currentUser's "albums" array
+        currentUser.albums = [...currentUser.albums, albumId];
+        
+        // Save the user to the "users" collection
         await currentUser.save();
 
-        res.json(currentUser);
-    } catch (error) {
-        console.log(error);
+        // Populate the "albums" array to get the "title", "band" and "year" of EACH album
+        await currentUser.populate("albums");
+
+        // Prepare an object with the details to send back to the frontend
+        const updatedUser = {
+            _id: currentUser._id,
+            username: currentUser.username,
+            albums: currentUser.albums  // Populated!
+        }
+
+        // Send back the updated user to the frontend
+        res.json(updatedUser);
+    } catch (e) {
+        console.log(e);
         next(createError.InternalServerError());
     }
 };
 
 
-
+// DELETE /user/:userId
 export const deleteUser = async (req, res, next) => {
     try {
-        const { _id } = req.body;
+        const { userId } = req.params;
 
-        const currentUser = User.findById(_id);
+        const currentUser = User.findById(userId);
 
         if (!currentUser) {
             return next(createError.NotFound());
         }
 
         // Try to use findByIdAndRemove()
-        await User.findByIdAndRemove(_id);
+        await User.findByIdAndRemove(userId);
 
-        console.log(`User with _id ${_id} was removed from the "users" collection!`);
+        console.log(`User with _id ${userId} was removed from the "users" collection!`);
 
         const updatedUser = {
             _id: "",

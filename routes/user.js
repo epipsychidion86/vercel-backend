@@ -9,8 +9,9 @@ const router = express.Router();
 // Express identifies it by the : and stores it by its name in the req.params object.
 router.get("/:userId", getUser);
 
+// Update the user identified in the req params
 router.patch("/:userId", updateUser);
 
-router.delete("/", deleteUser);
+router.delete("/:userId", deleteUser);
 
 export default router;
