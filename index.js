@@ -10,7 +10,7 @@ app.use(cors());
 
 app.use(express.json());
 
-app.get("/", rootGet);
+app.get("/api/test", rootGet);
 
 app.use(globalErrorHandler);
 
