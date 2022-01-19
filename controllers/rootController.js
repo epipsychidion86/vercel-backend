@@ -1,3 +1,3 @@
 export const rootGet = (req, res) => {
-    res.json("Hallo Welt!");
+    res.json("Yo globe!");
 }
